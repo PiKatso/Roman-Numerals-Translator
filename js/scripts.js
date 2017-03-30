@@ -5,10 +5,9 @@ var splitToParts = function(number) {
     while(number > 0) {
         var result = number % 10;
         if(result > 0) {
-            parts.unshift(result * multiplier);
+            parts.unshift(result);
         }
         number = Math.floor(number / 10);
-        multiplier *= 10;
     }
     return parts;
 }
@@ -18,7 +17,7 @@ symbol = function(arabic, roman) {
   this.roman = roman;
 }
 //[3000,400,50,6]
-var translator = function(number_part) {
+var translator = function(number) {
   var symbolObjects = [
     new symbol(1, 'I'),
     new symbol(5, 'V'),
@@ -27,32 +26,35 @@ var translator = function(number_part) {
     new symbol(100, 'C'),
     new symbol(500, 'D'),
     new symbol(1000, 'M')
-  ].reverse();
+  ];
   var places = [1000, 100, 10, 1];
   var result = '';
-  places.forEach(function(place){
+  var multiplier = 1;
+  places.forEach(function(place, placeIndex){
+    // grab the symbol for the current decimal place
     var symbol = symbolObjects.filter(function(elem) {
-      return elem.arabic == place;
+      return elem.arabic === place;
     })[0];
-    var numberofSymbols = Math.floor(number_part / symbol.arabic);
+    // find the index of that symbol so we traverse the array
+    var index = symbolObjects.indexOf(symbol);
+    // the number of symbols is the value at the numberarray
+    var numberofSymbols = number[placeIndex];
     if (numberofSymbols < 4) {
-      result += (numberofSymbols * symbol.roman);
-    } else if (numberofSymbols === 4 || numberofSymbols === 9) {
-      result += (symbolObjects[i-1] + symbolObjects[i+1]);
+      result += symbol.roman.repeat(numberofSymbols);
+    } else if (numberofSymbols === 4) {
+      result += symbolObjects[index + 1].roman + symbolObjects[index].roman
+    } else if (numberofSymbols === 9) {
+      result += symbolObjects[index - 1].roman + symbolObjects[index + 1].roman;
     } else {
-      result += (symbolObjects[i+1] + ((numberofSymbols - 5) * symbol.roman))
+      result += symbolObjects[index + 1].roman + symbol.roman.repeat((numberofSymbols - 5));
     }
   });
   return result;
 }
 
 function translateNumber(number) {
-  var parts = splitToParts(number);
-  var result = [];
-  parts.forEach(function(part) {
-    result.push(translator(part));
-  });
-  return result.join('');
+  return result = translator(splitToParts(number));
+  //return result.join('');
 }
 $(document).ready(function() {
   $('form').submit(function(){
