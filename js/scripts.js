@@ -17,7 +17,7 @@ symbol = function(arabic, roman) {
   this.roman = roman;
 }
 //[3000,400,50,6]
-var translator = function(number) {
+var translator = function(numbers) {
   var symbolObjects = [
     new symbol(1, 'I'),
     new symbol(5, 'V'),
@@ -27,26 +27,24 @@ var translator = function(number) {
     new symbol(500, 'D'),
     new symbol(1000, 'M')
   ];
-  var places = [1000, 100, 10, 1];
+  var places = [1, 10, 100, 1000];
   var result = '';
-  var multiplier = 1;
-  places.forEach(function(place, placeIndex){
+  numbers.reverse().forEach(function(number, placeIndex){
     // grab the symbol for the current decimal place
     var symbol = symbolObjects.filter(function(elem) {
-      return elem.arabic === place;
+      return elem.arabic === places[placeIndex];
     })[0];
     // find the index of that symbol so we traverse the array
     var index = symbolObjects.indexOf(symbol);
     // the number of symbols is the value at the numberarray
-    var numberofSymbols = number[placeIndex];
-    if (numberofSymbols < 4) {
-      result += symbol.roman.repeat(numberofSymbols);
-    } else if (numberofSymbols === 4) {
-      result += symbolObjects[index + 1].roman + symbolObjects[index].roman
-    } else if (numberofSymbols === 9) {
-      result += symbolObjects[index - 1].roman + symbolObjects[index + 1].roman;
+    if (number < 4) {
+      result = symbol.roman.repeat(number) + result;
+    } else if (number === 4) {
+      result = symbolObjects[index].roman + symbolObjects[index + 1].roman + result;
+    } else if (number === 9) {
+      result = symbolObjects[index].roman + symbolObjects[index + 2].roman + result;
     } else {
-      result += symbolObjects[index + 1].roman + symbol.roman.repeat((numberofSymbols - 5));
+      result = symbolObjects[index + 1].roman + symbol.roman.repeat((number - 5)) + result;
     }
   });
   return result;
