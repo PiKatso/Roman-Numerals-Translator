@@ -42,7 +42,7 @@ var translator = function(numbers) {
     } else if (number === 4) {
       result = symbolObjects[index].roman + symbolObjects[index + 1].roman + result;
     } else if (number === 9) {
-      result = symbolObjects[index].roman + symbolObjects[index + 2].roman + result;
+      result = symbolObjects[index].roman + symbolObjects[index + 2 ].roman + result;
     } else {
       result = symbolObjects[index + 1].roman + symbol.roman.repeat((number - 5)) + result;
     }
@@ -51,15 +51,19 @@ var translator = function(numbers) {
 }
 
 function translateNumber(number) {
-  return result = translator(splitToParts(number));
-  //return result.join('');
+  return translator(splitToParts(number));
 }
+
+function validateString(string) {
+  return ! /[^\d]/.test(string);
+}
+
 $(document).ready(function() {
   $('form').submit(function(){
     var input = $('input').val();
-    if (validateString === true) {
+    if (validateString(input) === true) {
       //compute result
-      var result = '';
+      var result = translateNumber(parseInt(input));
       $('#output').text(result);
     }
     return false;
